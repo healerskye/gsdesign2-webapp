@@ -129,7 +129,7 @@ function(req, res) {
 
 #* Fixed Design - Average Hazard Ratio
 #* @post /fixed-design-ahr
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -196,7 +196,7 @@ function(req) {
 
 #* Fixed Design - Fleming-Harrington
 #* @post /fixed-design-fh
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -269,7 +269,7 @@ function(req) {
 
 #* Fixed Design - Risk Difference
 #* @post /fixed-design-rd
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -285,8 +285,8 @@ function(req) {
       alpha = alpha,
       power = power,
       ratio = ratio,
-      p_c   = tibble::tibble(stratum = "All", rate = p_c),
-      p_e   = tibble::tibble(stratum = "All", rate = p_e),
+      p_c   = p_c,
+      p_e   = p_e,
       rd0   = rd0
     )
 
@@ -298,8 +298,8 @@ function(req) {
       '  alpha = ', alpha, ',\n',
       '  power = ', power, ',\n',
       '  ratio = ', ratio, ',\n',
-      '  p_c = tibble::tibble(stratum = "All", rate = ', p_c, '),\n',
-      '  p_e = tibble::tibble(stratum = "All", rate = ', p_e, '),\n',
+      '  p_c = ', p_c, ',\n',
+      '  p_e = ', p_e, ',\n',
       '  rd0 = ', rd0, '\n)\n',
       'result$analysis'
     )
@@ -320,7 +320,7 @@ function(req) {
 
 #* Group Sequential Design - Average Hazard Ratio
 #* @post /gs-design-ahr
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -432,7 +432,7 @@ function(req) {
 
 #* Group Sequential Design - Weighted Log-Rank
 #* @post /gs-design-wlr
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -567,7 +567,7 @@ function(req) {
 
 #* Group Sequential Design - Risk Difference
 #* @post /gs-design-rd
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -659,7 +659,7 @@ function(req) {
 
 #* Group Sequential Power - Average Hazard Ratio
 #* @post /gs-power-ahr
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -780,7 +780,7 @@ function(req) {
 
 #* Average Hazard Ratio Exploration
 #* @post /ahr
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -845,7 +845,7 @@ function(req) {
 
 #* Expected Events
 #* @post /expected-event
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -905,7 +905,7 @@ function(req) {
 
 #* Expected Time to Reach Target Events
 #* @post /expected-time
-#* @serializer json
+#* @serializer unboxedJSON
 function(req) {
   tryCatch({
     body <- req$body
@@ -965,7 +965,7 @@ function(req) {
 
 #* Health check
 #* @get /health
-#* @serializer json
+#* @serializer unboxedJSON
 function() {
   list(
     status = "ok",
