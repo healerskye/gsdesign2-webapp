@@ -1,0 +1,47 @@
+name: Deploy gsDesign2 Frontend
+
+on:
+  push:
+    branches: [main]
+    paths: ["frontend/**", ".github/workflows/deploy-frontend.yml"]
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --global vercel@latest
+      - name: Pull Vercel env
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_API_URL: https://gsdesign2-api.fly.dev
+      - name: Deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "Deployed to: $url"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Assign stable alias
+        run: |
+          DEPLOY_ID=$(curl -s "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1&target=production" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "import json,sys; print(json.load(sys.stdin)['deployments'][0]['uid'])")
+          curl -s -X POST "https://api.vercel.com/v2/deployments/$DEPLOY_ID/aliases" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"alias": "gsdesign2-healerskye.vercel.app"}'
+          echo "Live at: https://gsdesign2-healerskye.vercel.app"
