@@ -473,10 +473,10 @@ function(req) {
                  param = lower_param)
 
     weight <- switch(weight_method,
-      "logrank" = wlr_weight_1,
-      "fh"      = wlr_weight_fh(rho = weight_rho, gamma = weight_gamma),
-      "mb"      = wlr_weight_mb(tau = weight_tau),
-      wlr_weight_fh(rho = weight_rho, gamma = weight_gamma)
+      "logrank" = "logrank",
+      "fh"      = list(method = "fh", param = list(rho = weight_rho, gamma = weight_gamma)),
+      "mb"      = list(method = "mb", param = list(tau = weight_tau, w_max = 2)),
+      "logrank"
     )
 
     call_args <- list(
@@ -696,8 +696,6 @@ function(req) {
                  param = lower_param)
 
     call_args <- list(
-      alpha         = alpha,
-      beta          = beta,
       ratio         = ratio,
       enroll_rate   = enroll_rate,
       fail_rate     = fail_rate,
@@ -867,8 +865,7 @@ function(req) {
     result <- expected_event(
       enroll_rate    = enroll_rate,
       fail_rate      = fail_rate,
-      total_duration = total_duration,
-      ratio          = ratio
+      total_duration = total_duration
     )
 
     event_count <- .cleanNum(as.numeric(result))
