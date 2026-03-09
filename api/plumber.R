@@ -511,12 +511,13 @@ function(req) {
                 paste0("c(", paste(info_frac, collapse = ", "), ")") else "NULL"
 
     weight_str <- switch(weight_method,
-      "logrank" = "wlr_weight_1",
-      "fh"      = paste0("wlr_weight_fh(rho = ", weight_rho,
-                          ", gamma = ", weight_gamma, ")"),
-      "mb"      = paste0("wlr_weight_mb(tau = ", weight_tau, ")"),
-      paste0("wlr_weight_fh(rho = ", weight_rho,
-             ", gamma = ", weight_gamma, ")")
+      "logrank" = '"logrank"',
+      "fh"      = paste0('list(method = "fh", param = list(rho = ', weight_rho,
+                          ', gamma = ', weight_gamma, '))'),
+      "mb"      = paste0('list(method = "mb", param = list(tau = ', weight_tau,
+                          ', w_max = 2))'),
+      paste0('list(method = "fh", param = list(rho = ', weight_rho,
+             ', gamma = ', weight_gamma, '))')
     )
 
     rCode <- paste0(
@@ -744,14 +745,11 @@ function(req) {
       'lpar <- list(sf = ', lower_spending, ', total_spend = ', beta,
         ', param = ', lower_param, ')\n',
       'result <- gs_power_ahr(\n',
-      '  alpha = ', alpha, ',\n',
-      '  beta = ', beta, ',\n',
-      '  ratio = ', ratio, ',\n',
       '  enroll_rate = enroll_rate,\n',
       '  fail_rate = fail_rate,\n',
-      '  event = ', ev_str, ',\n',
+      if (!is.null(events)) paste0('  event = ', ev_str, ',\n') else '',
       '  analysis_time = ', at_str, ',\n',
-      '  info_frac = ', if_str, ',\n',
+      '  ratio = ', ratio, ',\n',
       '  binding = ', toupper(as.character(binding)), ',\n',
       '  upper = gs_spending_bound,\n',
       '  lower = gs_spending_bound,\n',
@@ -882,8 +880,7 @@ function(req) {
       'expected_event(\n',
       '  enroll_rate = enroll_rate,\n',
       '  fail_rate = fail_rate,\n',
-      '  total_duration = ', total_duration, ',\n',
-      '  ratio = ', ratio, '\n)'
+      '  total_duration = ', total_duration, '\n)'
     )
 
     list(
