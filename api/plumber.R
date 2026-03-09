@@ -13,7 +13,7 @@ library(tibble)
 # ---------------------------------------------------------------------------
 
 `%||%` <- function(x, y) {
-  if (!is.null(x) && length(x) > 0 && !identical(x, "")) x else y
+  if (!is.null(x) && length(x) > 0 && !identical(x, "") && !any(is.na(x))) x else y
 }
 
 .toNum <- function(x) {
